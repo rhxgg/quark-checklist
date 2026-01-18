@@ -5,11 +5,14 @@
   <title>Quark SMP – Daily Checklist</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Google Font for Title -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: system-ui, Arial, sans-serif;
-      background: linear-gradient(135deg, #020617, #0f172a);
-      color: #e5e7eb;
+      background: linear-gradient(135deg, #1a1400, #0f0a00);
+      color: #fefce8;
       padding: 20px;
       max-width: 500px;
       margin: auto;
@@ -17,38 +20,53 @@
 
     h1 {
       text-align: center;
-      color: #38bdf8;
+      font-family: 'Orbitron', sans-serif;
+      color: #facc15;
       margin-bottom: 5px;
+      letter-spacing: 1px;
     }
 
     p {
       text-align: center;
-      color: #94a3b8;
+      color: #fde68a;
       font-size: 14px;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #facc15;
+      background: #1c1600;
+      color: #facc15;
+      margin-bottom: 20px;
+      font-size: 14px;
     }
 
     .task {
-      background: #020617;
-      border-radius: 12px;
+      background: #1c1600;
+      border-radius: 14px;
       padding: 12px 15px;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      border: 1px solid #facc15;
     }
 
     input[type="checkbox"] {
       transform: scale(1.3);
       cursor: pointer;
+      accent-color: #facc15;
     }
 
     footer {
       text-align: center;
       margin-top: 30px;
       font-size: 12px;
-      color: #64748b;
+      color: #fde68a;
     }
   </style>
 </head>
@@ -56,6 +74,13 @@
 
 <h1>Quark SMP</h1>
 <p>Daily Admin Checklist</p>
+
+<!-- USER SELECTOR -->
+<select id="userSelect">
+  <option value="jif">Jif</option>
+  <option value="rehu">Rehu</option>
+  <option value="zahi">Zahi</option>
+</select>
 
 <div class="task">
   <input type="checkbox" data-id="discord">
@@ -82,29 +107,51 @@
   <label>Check backups & permissions</label>
 </div>
 
+<div class="task">
+  <input type="checkbox" data-id="events">
+  <label>Plan / suggest a small SMP activity</label>
+</div>
+
 <footer>
-  Resets automatically every day ⚡
+  Resets automatically every day 💛
 </footer>
 
 <script>
   const today = new Date().toDateString();
-  const savedDate = localStorage.getItem("date");
+  const dateKey = "date";
 
-  if (savedDate !== today) {
-    localStorage.clear();
-    localStorage.setItem("date", today);
+  if (localStorage.getItem(dateKey) !== today) {
+    Object.keys(localStorage).forEach(k => {
+      if (k !== dateKey) localStorage.removeItem(k);
+    });
+    localStorage.setItem(dateKey, today);
   }
 
-  document.querySelectorAll("input[type=checkbox]").forEach(box => {
-    const id = box.dataset.id;
-    box.checked = localStorage.getItem(id) === "true";
+  const userSelect = document.getElementById("userSelect");
+  const checkboxes = document.querySelectorAll("input[type=checkbox]");
 
-    box.addEventListener("change", () => {
-      localStorage.setItem(id, box.checked);
+  function loadUser() {
+    const user = userSelect.value;
+    checkboxes.forEach(box => {
+      const key = `${user}_${box.dataset.id}`;
+      box.checked = localStorage.getItem(key) === "true";
     });
+  }
+
+  function saveUser(box) {
+    const user = userSelect.value;
+    const key = `${user}_${box.dataset.id}`;
+    localStorage.setItem(key, box.checked);
+  }
+
+  userSelect.addEventListener("change", loadUser);
+
+  checkboxes.forEach(box => {
+    box.addEventListener("change", () => saveUser(box));
   });
+
+  loadUser();
 </script>
 
 </body>
 </html>
-
